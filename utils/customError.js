@@ -8,4 +8,4 @@ class CustomError extends Error {
   }
 }
 
-module.exports = constructor;
+module.exports = CustomError;

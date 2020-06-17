@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const RestaurantSchema = new mongoose.Schema({
   name: {
@@ -8,6 +9,7 @@ const RestaurantSchema = new mongoose.Schema({
     unique: [true, 'A name must be unique'],
     maxlength: [25, 'A name must be no more than 25 characters'],
   },
+  slug: String,
   maxTableSize: Number,
   affordability: {
     type: String,
@@ -57,6 +59,12 @@ const RestaurantSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+});
+
+// Generate a slug
+RestaurantSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
 });
 
 module.exports = mongoose.model('Restaurant', RestaurantSchema);

@@ -1,9 +1,15 @@
-const express = require("express");
+const express = require('express');
 
-const { getRestaurants } = require("../controllers/restaurantsController");
+const {
+  getRestaurants,
+  getRestaurant,
+  createRestaurant,
+  updateRestaurant,
+} = require('../controllers/restaurantsController');
 
 const router = express.Router();
 
-router.route("/").get(getRestaurants);
+router.route('/').get(getRestaurants).post(createRestaurant);
+router.route('/:id').get(getRestaurant).patch(updateRestaurant);
 
 module.exports = router;

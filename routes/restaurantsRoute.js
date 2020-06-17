@@ -6,9 +6,12 @@ const {
   createRestaurant,
   updateRestaurant,
   deleteRestaurant,
+  topFiveCheapAlias,
 } = require('../controllers/restaurantsController');
 
 const router = express.Router();
+
+router.route('/topfivecheap').get(topFiveCheapAlias, getRestaurants);
 
 router.route('/').get(getRestaurants).post(createRestaurant);
 router

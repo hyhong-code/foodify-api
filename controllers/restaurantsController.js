@@ -1,6 +1,6 @@
 const Restaurant = require('../models/Restaurant');
 const CustomError = require('../utils/customError');
-const QueryFeatures = require('../utils/QueryFeatures');
+const QueryFeatures = require('../utils/queryFeatures');
 const asyncHandler = require('../utils/asyncHandler');
 
 // @desc    Get restaurants
@@ -88,3 +88,10 @@ exports.deleteRestaurant = asyncHandler(async (req, res, next) => {
 
   res.status(204).json({ status: 'success', data: null });
 });
+
+// Middleware to get top five rated cheap resturants
+exports.topFiveCheapAlias = (req, res, next) => {
+  req.query.sort = '-averageRating,averageDishPrice';
+  req.query.limit = '5';
+  next();
+};

@@ -14,10 +14,11 @@ app.use(express.json());
 // Routers
 app.use('/api/v1/restaurants', restaurantsRouter);
 
-// app.use((err, req, res, next) => {
-//   const error = { ...err };
-//   error.message = err.message;
-//   res.status(400).send(error);
-// });
+// For temporary testing
+app.use((err, req, res, next) => {
+  const error = { ...err };
+  error.message = err.message;
+  res.status(400).send(error);
+});
 
 module.exports = app;

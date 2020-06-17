@@ -53,6 +53,10 @@ const RestaurantSchema = new mongoose.Schema({
     ],
     required: [true, 'An email is required'],
   },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 module.exports = mongoose.model('Restaurant', RestaurantSchema);

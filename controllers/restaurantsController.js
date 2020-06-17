@@ -20,6 +20,7 @@ exports.getRestaurants = asyncHandler(async (req, res, next) => {
 exports.getRestaurant = asyncHandler(async (req, res, next) => {
   const restaurant = await Restaurant.findById(req.params.id);
 
+  // Check if restaurant exists
   if (!restaurant) {
     return next(new CustomError(`No such restaurant with id ${req.params.id}`));
   }
@@ -54,6 +55,7 @@ exports.updateRestaurant = asyncHandler(async (req, res, next) => {
     }
   );
 
+  // Check if restaurant exists
   if (!restaurant) {
     return next(new CustomError(`No such restaurant with id ${req.params.id}`));
   }
@@ -62,4 +64,20 @@ exports.updateRestaurant = asyncHandler(async (req, res, next) => {
     status: 'success',
     data: { restaurant },
   });
+});
+
+// @desc    Delete a restaurant
+// @route   DELETE /api/v1/restaurants:id
+// @access  Private
+exports.deleteRestaurant = asyncHandler(async (req, res, next) => {
+  const restaurant = await Restaurant.findById(req.params.id);
+
+  // Check if restaurant exists
+  if (!restaurant) {
+    return next(new CustomError(`No such restaurant with id ${req.params.id}`));
+  }
+
+  await restaurant.remove();
+
+  res.status(204).json({ status: 'success', data: null });
 });

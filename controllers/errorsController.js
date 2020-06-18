@@ -31,8 +31,10 @@ const errorsController = (err, req, res, next) => {
   err.status = err.status || 'error';
 
   if (process.env.NODE_ENV === 'production') {
+    console.log(err);
     let error = { ...err };
-    error.name = err.name; // enumerable field
+    error.name = err.name;
+    error.message = err.message;
 
     // Handle Mongoose Object Id casting error
     if (error.name === 'CastError') {

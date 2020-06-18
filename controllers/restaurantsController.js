@@ -103,13 +103,14 @@ exports.topFiveCheapAlias = (req, res, next) => {
 // @access  Private
 exports.restaurantsStats = asyncHandler(async (req, res, next) => {
   const stats = await Restaurant.aggregate([
-    { $match: { averageRating: { $gte: 3.5 } } },
+    { $match: { averageRating: { $gte: 1 } } },
     {
       $group: {
         _id: { $toUpper: '$affordability' },
         avgDishPrice: { $avg: '$averageDishPrice' },
         ratingsQty: { $sum: '$ratingsQty' },
         avgMaxTableSize: { $avg: '$maxTableSize' },
+        names: { $push: '$name' },
         count: { $sum: 1 },
       },
     },

@@ -73,23 +73,30 @@ const RestaurantSchema = new mongoose.Schema({
   },
 });
 
-// Document middlwares
+// Document middlwares - this refers to model instance
 // Generate a slug
 RestaurantSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
-// Query middlewares
+// Query middlewares - this refers to query obj
 // Exclude banned restaurants from query results (matches find, and findOne)
 RestaurantSchema.pre(/^find/, function (next) {
   this.curTime = Date.now();
-  this.find({ banned: { $ne: true } }); // keep building qurey, this refers to query obj
+  this.find({ banned: { $ne: true } }); // keep building qurey
   next();
 });
 
 RestaurantSchema.post(/^find/, function (doc, next) {
   console.log(`Query took ${Date.now() - this.curTime} milliseconds...`);
+  next();
+});
+
+// Aggregation middlewares - this refers to aggregation object
+RestaurantSchema.pre('aggregate', function (next) {
+  // Exclude banned restaurants from aggregation
+  this.pipeline().unshift({ $match: { banned: { $ne: true } } });
   next();
 });
 

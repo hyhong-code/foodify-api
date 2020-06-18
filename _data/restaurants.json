@@ -1,6 +1,5 @@
 [
   {
-    "id": 1,
     "name": "Nue",
     "maxTableSize": 7,
     "affordability": "affordable",
@@ -16,7 +15,6 @@
     "email": "restaurant@gmail.com"
   },
   {
-    "id": 2,
     "name": "Skillet Capitol Hill",
     "maxTableSize": 8,
     "affordability": "regular",
@@ -32,7 +30,6 @@
     "email": "restaurant@gmail.com"
   },
   {
-    "id": 3,
     "name": "Terra Plata",
     "maxTableSize": 7,
     "affordability": "affordable",
@@ -48,7 +45,6 @@
     "email": "restaurant@gmail.com"
   },
   {
-    "id": 4,
     "name": "Cook Weaver",
     "maxTableSize": 7,
     "affordability": "regular",
@@ -63,7 +59,6 @@
     "email": "restaurant@gmail.com"
   },
   {
-    "id": 5,
     "name": "Marjorie",
     "maxTableSize": 7,
     "affordability": "affordable",
@@ -78,7 +73,6 @@
     "email": "restaurant@gmail.com"
   },
   {
-    "id": 6,
     "name": "Lark Restaurant",
     "maxTableSize": 10,
     "affordability": "affordable",
@@ -94,7 +88,6 @@
     "email": "restaurant@gmail.com"
   },
   {
-    "id": 7,
     "name": "Tallulah's",
     "maxTableSize": 8,
     "affordability": "expensive",
@@ -107,5 +100,20 @@
     "address": "550 19th Ave E, Seattle, WA 98112",
     "phone": "206-666-0000",
     "email": "restaurant@gmail.com"
+  },
+  {
+    "name": "Portage Bay Cafe",
+    "maxTableSize": 6,
+    "affordability": "expensive",
+    "averageDishPrice": 25,
+    "averageRating": 1.5,
+    "ratingsQty": 44,
+    "description": "Daytime restaurant for sustainable breakfasts, lunches & brunches & a nuts-&-fruits toppings bar.",
+    "imageCover": "restaurant-8-cover.jpg",
+    "veganFriendly": true,
+    "address": "391 Terry Ave N, Seattle, WA 98109",
+    "phone": "206-666-0000",
+    "email": "restaurant@gmail.com",
+    "banned": true
   }
 ]

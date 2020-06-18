@@ -1,6 +1,6 @@
-require("dotenv").config({ path: `${__dirname}/config/config.env` });
-const connectDB = require("./config/db");
-const app = require("./app.js");
+require('dotenv').config({ path: `${__dirname}/config/config.env` });
+const connectDB = require('./config/db');
+const app = require('./app.js');
 
 connectDB();
 

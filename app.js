@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const errorHander = require('./controllers/errorsController');
 
 const restaurantsRouter = require('./routes/restaurantsRoute');
 
@@ -14,11 +15,6 @@ app.use(express.json());
 // Routers
 app.use('/api/v1/restaurants', restaurantsRouter);
 
-// For temporary testing
-app.use((err, req, res, next) => {
-  const error = { ...err };
-  error.message = err.message;
-  res.status(400).send(error);
-});
+app.use(errorHander);
 
 module.exports = app;

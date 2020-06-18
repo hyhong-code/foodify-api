@@ -29,7 +29,9 @@ exports.getRestaurant = asyncHandler(async (req, res, next) => {
 
   // Check if restaurant exists
   if (!restaurant) {
-    return next(new CustomError(`No such restaurant with id ${req.params.id}`));
+    return next(
+      new CustomError(`No such restaurant with id ${req.params.id}`, 404)
+    );
   }
 
   res.status(200).json({
@@ -64,7 +66,9 @@ exports.updateRestaurant = asyncHandler(async (req, res, next) => {
 
   // Check if restaurant exists
   if (!restaurant) {
-    return next(new CustomError(`No such restaurant with id ${req.params.id}`));
+    return next(
+      new CustomError(`No such restaurant with id ${req.params.id}`, 404)
+    );
   }
 
   res.status(200).json({
@@ -81,7 +85,9 @@ exports.deleteRestaurant = asyncHandler(async (req, res, next) => {
 
   // Check if restaurant exists
   if (!restaurant) {
-    return next(new CustomError(`No such restaurant with id ${req.params.id}`));
+    return next(
+      new CustomError(`No such restaurant with id ${req.params.id}`, 404)
+    );
   }
 
   await restaurant.remove();

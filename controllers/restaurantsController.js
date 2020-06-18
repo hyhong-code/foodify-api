@@ -89,9 +89,39 @@ exports.deleteRestaurant = asyncHandler(async (req, res, next) => {
   res.status(204).json({ status: 'success', data: null });
 });
 
-// Middleware to get top five rated cheap resturants
+// @desc    Get top five rated cheap resturants
+// @route   GET /api/v1/restaurants/top-five-cheap
+// @access  Public
 exports.topFiveCheapAlias = (req, res, next) => {
   req.query.sort = '-averageRating,averageDishPrice';
   req.query.limit = '5';
   next();
 };
+
+// @desc    Presend some restaurant stats by each affordability level
+// @route   GET /api/v1/restaurants/stats
+// @access  Private
+exports.restaurantsStats = asyncHandler(async (req, res, next) => {
+  const stats = await Restaurant.aggregate([
+    { $match: { averageRating: { $gte: 3.5 } } },
+    {
+      $group: {
+        _id: { $toUpper: '$affordability' },
+        avgDishPrice: { $avg: '$averageDishPrice' },
+        ratingsQty: { $sum: '$ratingsQty' },
+        avgMaxTableSize: { $avg: '$maxTableSize' },
+        count: { $sum: 1 },
+      },
+    },
+    { $addFields: { affordability: '$_id' } },
+    { $project: { _id: 0 } },
+    { $sort: { avgDishPrice: 1 } },
+    { $limit: 3 },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    results: stats.length,
+    data: { stats },
+  });
+});

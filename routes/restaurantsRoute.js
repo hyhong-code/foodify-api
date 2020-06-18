@@ -7,11 +7,13 @@ const {
   updateRestaurant,
   deleteRestaurant,
   topFiveCheapAlias,
+  restaurantsStats,
 } = require('../controllers/restaurantsController');
 
 const router = express.Router();
 
-router.route('/topfivecheap').get(topFiveCheapAlias, getRestaurants);
+router.route('/top-five-cheap').get(topFiveCheapAlias, getRestaurants);
+router.route('/stats').get(restaurantsStats);
 
 router.route('/').get(getRestaurants).post(createRestaurant);
 router

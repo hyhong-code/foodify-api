@@ -20,8 +20,16 @@ const RestaurantSchema = new mongoose.Schema({
     },
   },
   averageDishPrice: Number,
-  averageRating: Number,
-  ratingsQty: Number,
+  averageRating: {
+    type: Number,
+    min: [1, 'A rating must be at least 1.'],
+    max: [5, 'A rating must be no more than 5'],
+    default: 4,
+  },
+  ratingsQty: {
+    type: Number,
+    default: 0,
+  },
   description: {
     type: String,
     trim: true,
@@ -59,11 +67,29 @@ const RestaurantSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  banned: {
+    type: Boolean,
+    default: false,
+  },
 });
 
+// Document middlwares
 // Generate a slug
 RestaurantSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// Query middlewares
+// Exclude banned restaurants from query results (matches find, and findOne)
+RestaurantSchema.pre(/^find/, function (next) {
+  this.curTime = Date.now();
+  this.find({ banned: { $ne: true } }); // keep building qurey, this refers to query obj
+  next();
+});
+
+RestaurantSchema.post(/^find/, function (doc, next) {
+  console.log(`Query took ${Date.now() - this.curTime} milliseconds...`);
   next();
 });
 

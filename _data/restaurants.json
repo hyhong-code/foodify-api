@@ -10,7 +10,7 @@
     "imageCover": "restaurant-1-cover.jpg",
     "openDineIn": true,
     "veganFriendly": false,
-    "address": "1519 14th Ave, Seattle, WA 98122",
+    "mainAddress": "1519 14th Ave, Seattle, WA 98122",
     "phone": "206-666-0000",
     "email": "restaurant@gmail.com"
   },
@@ -25,7 +25,7 @@
     "imageCover": "restaurant-2-cover.jpg",
     "openDineIn": false,
     "veganFriendly": true,
-    "address": "1400 E Union St, Seattle, WA 98122",
+    "mainAddress": "1400 E Union St, Seattle, WA 98122",
     "phone": "206-666-0000",
     "email": "restaurant@gmail.com"
   },
@@ -40,7 +40,7 @@
     "imageCover": "restaurant-3-cover.jpg",
     "openDineIn": true,
     "veganFriendly": false,
-    "address": "1501 Melrose Ave, Seattle, WA 98122",
+    "mainAddress": "1501 Melrose Ave, Seattle, WA 98122",
     "phone": "206-666-0000",
     "email": "restaurant@gmail.com"
   },
@@ -54,7 +54,7 @@
     "description": "Hearty Eurasian dishes & chic cocktails served in a casual setting complete with distinctive murals.",
     "imageCover": "restaurant-4-cover.jpg",
     "veganFriendly": true,
-    "address": "806 E Roy St, Seattle, WA 98102",
+    "mainAddress": "806 E Roy St, Seattle, WA 98102",
     "phone": "206-666-0000",
     "email": "restaurant@gmail.com"
   },
@@ -68,7 +68,7 @@
     "description": "Modern design & handcrafted decor set the stage for eclectic comfort fare from around the world.",
     "imageCover": "restaurant-5-cover.jpg",
     "veganFriendly": false,
-    "address": "1412 E Union St, Seattle, WA 98122",
+    "mainAddress": "1412 E Union St, Seattle, WA 98122",
     "phone": "206-666-0000",
     "email": "restaurant@gmail.com"
   },
@@ -83,7 +83,11 @@
     "imageCover": "restaurant-6-cover.jpg",
     "openDineIn": true,
     "veganFriendly": false,
-    "address": "952 E Seneca St, Seattle, WA 98122",
+    "mainAddress": "952 E Seneca St, Seattle, WA 98122",
+    "addresses": [
+      "952 E Seneca St, Seattle, WA 98122",
+      "85 Pike St, Seattle, WA 98101"
+    ],
     "phone": "206-666-0000",
     "email": "restaurant@gmail.com"
   },
@@ -97,7 +101,7 @@
     "description": "Veggie-friendly, Mediterranean-influenced American fare in a stylish room with midcentury decor.",
     "imageCover": "restaurant-7-cover.jpg",
     "veganFriendly": true,
-    "address": "550 19th Ave E, Seattle, WA 98112",
+    "mainAddress": "550 19th Ave E, Seattle, WA 98112",
     "phone": "206-666-0000",
     "email": "restaurant@gmail.com"
   },
@@ -111,7 +115,7 @@
     "description": "Daytime restaurant for sustainable breakfasts, lunches & brunches & a nuts-&-fruits toppings bar.",
     "imageCover": "restaurant-8-cover.jpg",
     "veganFriendly": true,
-    "address": "391 Terry Ave N, Seattle, WA 98109",
+    "mainAddress": "391 Terry Ave N, Seattle, WA 98109",
     "phone": "206-666-0000",
     "email": "restaurant@gmail.com",
     "banned": true

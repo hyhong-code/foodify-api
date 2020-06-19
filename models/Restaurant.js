@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const geocoder = require('../utils/geoCode');
 
 const RestaurantSchema = new mongoose.Schema({
   name: {
@@ -46,7 +47,14 @@ const RestaurantSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  address: String,
+  mainAddress: {
+    type: String,
+    required: [true, 'mainAddress is required'],
+  },
+  addresses: {
+    type: [String],
+    defalt: [],
+  },
   phone: {
     type: String,
     match: [
@@ -72,12 +80,61 @@ const RestaurantSchema = new mongoose.Schema({
     default: false,
     select: false,
   },
+  mainLocation: {
+    type: {
+      type: String,
+      enum: ['Point'],
+    },
+    coordinates: {
+      type: [Number],
+    },
+  },
+  locations: [
+    {
+      type: {
+        type: String,
+        enum: ['Point'],
+        required: true,
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
+    },
+  ],
 });
 
 // Document middlwares - this refers to model instance
 // Generate a slug
 RestaurantSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// Geocode mainAddress
+RestaurantSchema.pre('save', async function (next) {
+  const result = await geocoder.geocode(this.mainAddress);
+  this.mainAddress = result[0].formattedAddress;
+  this.mainLocation = {
+    type: 'Point',
+    coordinates: [result[0].longitude, result[0].latitude],
+  };
+
+  if (!this.addresses.length) this.addresses = [result[0].formattedAddress];
+  next();
+});
+
+// Geocode addresses
+RestaurantSchema.pre('save', async function (next) {
+  const resultPromises = this.addresses.map((address) =>
+    geocoder.geocode(address)
+  );
+  const results = await Promise.all(resultPromises);
+  this.addresses = results.map((val) => val[0].formattedAddress);
+  this.locations = results.map((val) => ({
+    type: 'Point',
+    coordinates: [val[0].longitude, val[0].latitude],
+  }));
   next();
 });
 

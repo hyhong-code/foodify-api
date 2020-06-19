@@ -13,6 +13,7 @@ const CustomError = require('./utils/customError');
 const restaurantsRouter = require('./routes/restaurantsRoute');
 const authRouter = require('./routes/authRoute');
 const reviewRouter = require('./routes/reviewRoute');
+const userRouter = require('./routes/userRoute');
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use(cookieParser());
 app.use('/api/v1/restaurants', restaurantsRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/users', userRouter);
 
 app.all('*', (req, res, next) => {
   next(new CustomError(`Route ${req.originalUrl} not found...`, 404));

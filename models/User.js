@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -21,8 +22,10 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String,
     minlength: [6, 'Password must be at lease 6 characters'],
+    select: false,
+    required: [true, 'Password is required'],
   },
-  passwordCondirm: {
+  passwordConfirm: {
     type: String,
     validate: {
       validator: function (v) {
@@ -30,6 +33,7 @@ const UserSchema = new mongoose.Schema({
       },
       message: 'Passwords do not match',
     },
+    required: [true, 'Password confirm is required'],
   },
   role: {
     type: String,
@@ -45,7 +49,15 @@ const UserSchema = new mongoose.Schema({
 // Hash user password
 UserSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
   next();
 });
+
+// Sign and return a token
+UserSchema.methods.generateToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES,
+  });
+};
 
 module.exports = mongoose.model('User', UserSchema);

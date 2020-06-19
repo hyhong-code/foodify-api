@@ -4,6 +4,7 @@ const errorHander = require('./controllers/errorsController');
 const CustomError = require('./utils/customError');
 
 const restaurantsRouter = require('./routes/restaurantsRoute');
+const authRouter = require('./routes/authRoute');
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 
 // Routers
 app.use('/api/v1/restaurants', restaurantsRouter);
+app.use('/api/v1/auth/', authRouter);
 
 app.all('*', (req, res, next) => {
   next(new CustomError(`Route ${req.originalUrl} not found...`, 404));

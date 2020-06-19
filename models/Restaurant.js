@@ -102,12 +102,20 @@ const RestaurantSchema = new mongoose.Schema({
       },
     },
   ],
-  owners: [
-    {
-      type: mongoose.Schema.ObjectId,
-      ref: 'User',
+  owners: {
+    type: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        required: true,
+      },
+    ],
+    default: [],
+    validate: {
+      validator: (v) => v.length > 0,
+      message: 'At least one owner is required',
     },
-  ],
+  },
 });
 
 // Document middlwares - this refers to model instance

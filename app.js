@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 const errorHander = require('./controllers/errorsController');
 const CustomError = require('./utils/customError');
 
@@ -13,6 +14,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 app.use(express.json());
+app.use(cookieParser());
 
 // Routers
 app.use('/api/v1/restaurants', restaurantsRouter);

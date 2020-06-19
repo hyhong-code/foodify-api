@@ -50,6 +50,7 @@ const UserSchema = new mongoose.Schema({
 UserSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
+  this.pwChangedAt = new Date(Date.now() - 5 * 1000);
   next();
 });
 

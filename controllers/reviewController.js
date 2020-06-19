@@ -2,6 +2,7 @@ const asyncHandler = require('../utils/asyncHandler.js');
 const CustomError = require('../utils/customError');
 const Review = require('../models/Review');
 const Restaurant = require('../models/Restaurant');
+const QueryFeatures = require('../utils/queryFeatures');
 
 // @desc    Get reviews
 // @route   GET /api/v1/reviews
@@ -14,7 +15,13 @@ exports.getReviews = asyncHandler(async (req, res, next) => {
     filter.restaurant = req.params.restaurantId;
   }
 
-  const reviews = await Review.find(filter);
+  const query = Review.find(filter);
+  const reviews = await new QueryFeatures(query, req.query)
+    .filter()
+    .select()
+    .sort()
+    .paginate().query;
+
   res.status(200).json({
     status: 'success',
     length: reviews.length,

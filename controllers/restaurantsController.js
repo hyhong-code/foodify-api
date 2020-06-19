@@ -7,7 +7,10 @@ const asyncHandler = require('../utils/asyncHandler');
 // @route   GET /api/v1/restaurants
 // @access  Public
 exports.getRestaurants = asyncHandler(async (req, res, next) => {
-  const query = Restaurant.find();
+  const query = Restaurant.find().populate({
+    path: 'reviews',
+    select: 'name review',
+  });
   const restaurants = await new QueryFeatures(query, req.query)
     .filter()
     .select()

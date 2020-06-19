@@ -102,6 +102,12 @@ const RestaurantSchema = new mongoose.Schema({
       },
     },
   ],
+  owners: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+    },
+  ],
 });
 
 // Document middlwares - this refers to model instance
@@ -142,7 +148,10 @@ RestaurantSchema.pre('save', async function (next) {
 // Exclude banned restaurants from query results (matches find, and findOne)
 RestaurantSchema.pre(/^find/, function (next) {
   this.curTime = Date.now();
-  this.find({ banned: { $ne: true } }); // keep building qurey
+  this.find({ banned: { $ne: true } }).populate({
+    path: 'owners',
+    select: 'name email',
+  }); // keep building qurey
   next();
 });
 

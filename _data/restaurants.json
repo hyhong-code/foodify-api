@@ -12,7 +12,8 @@
     "veganFriendly": false,
     "mainAddress": "1519 14th Ave, Seattle, WA 98122",
     "phone": "206-666-0000",
-    "email": "restaurant@gmail.com"
+    "email": "restaurant@gmail.com",
+    "owners": ["5eeceb390bc238a8ce04e74c"]
   },
   {
     "name": "Skillet Capitol Hill",
@@ -27,7 +28,8 @@
     "veganFriendly": true,
     "mainAddress": "1400 E Union St, Seattle, WA 98122",
     "phone": "206-666-0000",
-    "email": "restaurant@gmail.com"
+    "email": "restaurant@gmail.com",
+    "owners": ["5eeceb4b0bc238a8ce04e74d"]
   },
   {
     "name": "Terra Plata",
@@ -42,7 +44,8 @@
     "veganFriendly": false,
     "mainAddress": "1501 Melrose Ave, Seattle, WA 98122",
     "phone": "206-666-0000",
-    "email": "restaurant@gmail.com"
+    "email": "restaurant@gmail.com",
+    "owners": ["5eeceb520bc238a8ce04e74e", "5eecec1a926fc4a975c56286"]
   },
   {
     "name": "Cook Weaver",
@@ -56,7 +59,8 @@
     "veganFriendly": true,
     "mainAddress": "806 E Roy St, Seattle, WA 98102",
     "phone": "206-666-0000",
-    "email": "restaurant@gmail.com"
+    "email": "restaurant@gmail.com",
+    "owners": ["5eeceb570bc238a8ce04e74f"]
   },
   {
     "name": "Marjorie",
@@ -70,7 +74,8 @@
     "veganFriendly": false,
     "mainAddress": "1412 E Union St, Seattle, WA 98122",
     "phone": "206-666-0000",
-    "email": "restaurant@gmail.com"
+    "email": "restaurant@gmail.com",
+    "owners": ["5eeceb5d0bc238a8ce04e750", "5eecec20926fc4a975c56287"]
   },
   {
     "name": "Lark Restaurant",
@@ -89,7 +94,8 @@
       "85 Pike St, Seattle, WA 98101"
     ],
     "phone": "206-666-0000",
-    "email": "restaurant@gmail.com"
+    "email": "restaurant@gmail.com",
+    "owners": ["5eeceb630bc238a8ce04e751"]
   },
   {
     "name": "Tallulah's",
@@ -103,7 +109,8 @@
     "veganFriendly": true,
     "mainAddress": "550 19th Ave E, Seattle, WA 98112",
     "phone": "206-666-0000",
-    "email": "restaurant@gmail.com"
+    "email": "restaurant@gmail.com",
+    "owners": ["5eecebf281b695a955ed1352", "5eecec27926fc4a975c56288"]
   },
   {
     "name": "Portage Bay Cafe",
@@ -118,6 +125,7 @@
     "mainAddress": "391 Terry Ave N, Seattle, WA 98109",
     "phone": "206-666-0000",
     "email": "restaurant@gmail.com",
-    "banned": true
+    "banned": true,
+    "owners": ["5eecebec81b695a955ed1351"]
   }
 ]

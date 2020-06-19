@@ -70,6 +70,7 @@ const RestaurantSchema = new mongoose.Schema({
   banned: {
     type: Boolean,
     default: false,
+    select: false,
   },
 });
 

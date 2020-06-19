@@ -45,3 +45,30 @@ exports.createReview = asyncHandler(async (req, res, next) => {
     data: { review },
   });
 });
+
+// @desc    Update a review
+// @route   PATCH /api/v1/reviews/:id
+// @access  Private
+exports.updateReview = asyncHandler(async (req, res, next) => {
+  const review = await Review.findById(req.params.id);
+
+  // Check if review exists
+  if (!review) {
+    return next(new CustomError(`Review id ${req.params.id} not found`, 404));
+  }
+
+  // Check if user own the review
+  if (req.user.id !== review.user.toString()) {
+    return next(new CustomError(`User not authorized`, 401));
+  }
+
+  // Update the review
+  review.rating = req.body.rating;
+  review.review = req.body.review;
+  await review.save({ validateBeforeSave: true });
+
+  res.status(200).json({
+    status: 'success',
+    data: { review },
+  });
+});

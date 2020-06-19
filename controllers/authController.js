@@ -24,7 +24,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 };
 
 // @desc    Sign up a user
-// @route   /api/v1/auth/signup
+// @route   POST /api/v1/auth/signup
 // @access  Public
 exports.signUp = asyncHandler(async (req, res, next) => {
   // Create the user
@@ -34,7 +34,7 @@ exports.signUp = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Login a user
-// @route   /api/v1/auth/login
+// @route   POST /api/v1/auth/login
 // @access  Public
 exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
@@ -47,9 +47,21 @@ exports.login = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res);
 });
 
-exports.loadMe = asyncHandler(async (req, res, next) => {});
+// @desc    Load logged in user info
+// @route   GET /api/v1/auth/loadme
+// @access  Private
+exports.loadMe = asyncHandler(async (req, res, next) => {
+  res.status(200).json({
+    status: 'success',
+    data: { user: req.user },
+  });
+});
 
-// Verify if request has a valid Bearer token or cookie tooken
+// @desc    Load logged in user info
+// @route   /api/v1/auth/loadme
+// @access  Private
+
+// Authenticate via valid Bearer token or cookie token
 exports.protect = asyncHandler(async (req, res, next) => {
   let token;
 
@@ -74,7 +86,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
   const user = await User.findById(decoded.id);
 
   // Handle password changed after token was issued
-  if (user.pwChangedAt.getTime() / 1000 > decoded.iat) {
+  if (user.checkPwChangedDate(decoded.iat)) {
     next(new CustomError(`Password recently changed, please login again`, 401));
   }
 

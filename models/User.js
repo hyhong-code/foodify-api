@@ -48,6 +48,9 @@ const UserSchema = new mongoose.Schema({
 
 // Hash user password
 UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next();
+  }
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
   this.pwChangedAt = new Date(Date.now() - 5 * 1000);
@@ -65,6 +68,11 @@ UserSchema.methods.generateToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES,
   });
+};
+
+// Check if password changed after jwt is issued
+UserSchema.methods.checkPwChangedDate = function (jwtTimeStamp) {
+  return this.pwChangedAt.getTime() / 1000 > jwtTimeStamp;
 };
 
 module.exports = mongoose.model('User', UserSchema);

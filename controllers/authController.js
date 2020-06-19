@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const CustomError = require('../utils/customError');
 const asyncHandler = require('../utils/asyncHandler');
 const User = require('../models/User');
+const sendEmail = require('../utils/sendEmail');
+const { use } = require('../routes/authRoute');
 
 // Signs a jwt and responds with cookie
 const sendTokenResponse = (user, statusCode, res) => {
@@ -85,22 +87,78 @@ exports.updateInfo = asyncHandler(async (req, res, next) => {
 // @route   PATCH /api/v1/auth/updatepassword
 // @access  Private
 exports.updatePassword = asyncHandler(async (req, res, next) => {
-  const { password, passwordConfirm } = req.body;
+  const { currentPassword, newPassword, newPasswordConfirm } = req.body;
 
   // Check if required fields exists
-  if (!(password && passwordConfirm)) {
+  if (!(currentPassword && newPassword && newPasswordConfirm)) {
     return next(
-      new CustomError(`password and passwordConfirm are required`, 400)
+      new CustomError(
+        `currentPassword, newPassword and newPasswordConfirm are required`,
+        400
+      )
     );
   }
 
+  const user = await User.findById(req.user.id).select('+password');
+
+  // Check if current password correct
+  if (!(await user.verifyPassword(currentPassword))) {
+    return next(new CustomError(`Current password is incorrect`, 400));
+  }
+
   // Update password
-  const user = await User.findById(req.user.id);
-  user.password = password;
-  user.passwordConfirm = passwordConfirm;
+  user.password = newPassword;
+  user.passwordConfirm = newPasswordConfirm;
   await user.save({ validateBeforeSave: true });
 
   sendTokenResponse(user, 200, res);
+});
+
+// @desc    Request password reset token
+// @route   POST /api/v1/auth/forgotpassword
+// @access  Public
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+
+  // Check if email is send
+  if (!email) {
+    return next(new CustomError(`Email is required`, 400));
+  }
+
+  // Check if user exists
+  const user = await User.findOne({ email });
+  if (!user) {
+    return next(new CustomError(`No user found with email ${email}`, 404));
+  }
+
+  // Get a reset token
+  const token = await user.generateResetToken();
+
+  // Construct email
+  const emailOptions = {
+    to: user.email,
+    subject: `Password reset token, expires in 10 minutes`,
+    text: `To reset password, please send a PATCH request to ${
+      req.protocol
+    }://${req.get(
+      'host'
+    )}/api/v1/auth/resetpassword/${token}\nIgnore this email if you did not request it.`,
+  };
+
+  // Send email
+  try {
+    await sendEmail(emailOptions);
+  } catch (error) {
+    user.pwResetTokenExpires = undefined;
+    user.pwResetToken = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(new CustomError(`Error sending email, try again later`, 500));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: { message: 'Reset token send via email.' },
+  });
 });
 
 // Authenticate via valid Bearer token or cookie token

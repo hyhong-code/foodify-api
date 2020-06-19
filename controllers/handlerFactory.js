@@ -1,11 +1,23 @@
 const asyncHandler = require('../utils/asyncHandler');
 const CustomError = require('../utils/customError');
+const QueryFeatures = require('../utils/queryFeatures');
 
-exports.getAll = (Model) =>
+exports.getAll = (Model, populateObj) =>
   asyncHandler(async (req, res, next) => {
-    const docs = await Model.find();
+    let query = Model.find();
 
-    console.log('run');
+    // eslint-disable-next-line
+    query = new QueryFeatures(query, req.query)
+      .filter()
+      .select()
+      .sort()
+      .paginate().query;
+
+    if (populateObj) {
+      query = query.populate(populateObj);
+    }
+
+    const docs = await query;
 
     res.status(200).json({
       status: 'success',
@@ -14,9 +26,13 @@ exports.getAll = (Model) =>
     });
   });
 
-exports.getOne = (Model) =>
+exports.getOne = (Model, populateObj) =>
   asyncHandler(async (req, res, next) => {
-    const doc = await Model.findById(req.params.id);
+    let query = Model.findById(req.params.id);
+
+    if (populateObj) query = query.populate(populateObj);
+
+    const doc = await query;
 
     if (!doc) {
       return next(
@@ -30,7 +46,7 @@ exports.getOne = (Model) =>
     });
   });
 
-exports.addOne = (Model) =>
+exports.createOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     const doc = await Model.create(req.body);
 

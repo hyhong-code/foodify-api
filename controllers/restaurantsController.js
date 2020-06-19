@@ -1,103 +1,44 @@
 const Restaurant = require('../models/Restaurant');
 const CustomError = require('../utils/customError');
-const QueryFeatures = require('../utils/queryFeatures');
 const asyncHandler = require('../utils/asyncHandler');
+const {
+  getAll,
+  getOne,
+  createOne,
+  updateOne,
+  deleteOne,
+} = require('./handlerFactory.js');
 
 // @desc    Get restaurants
 // @route   GET /api/v1/restaurants
 // @access  Public
-exports.getRestaurants = asyncHandler(async (req, res, next) => {
-  const query = Restaurant.find();
-  const restaurants = await new QueryFeatures(query, req.query)
-    .filter()
-    .select()
-    .sort()
-    .paginate()
-    .query.populate({ path: 'reviews', select: 'name review rating' });
-
-  res.status(200).json({
-    status: 'success',
-    results: restaurants.length,
-    data: { restaurants },
-  });
+exports.getRestaurants = getAll(Restaurant, {
+  path: 'reviews',
+  select: 'name review rating',
 });
 
 // @desc    Get a restaurant
 // @route   GET /api/v1/restaurants:id
 // @access  Public
-exports.getRestaurant = asyncHandler(async (req, res, next) => {
-  const restaurant = await Restaurant.findById(req.params.id).populate({
-    path: 'reviews',
-    select: 'name review rating',
-  });
-
-  // Check if restaurant exists
-  if (!restaurant) {
-    return next(
-      new CustomError(`No such restaurant with id ${req.params.id}`, 404)
-    );
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: { restaurant },
-  });
+exports.getRestaurant = getOne(Restaurant, {
+  path: 'reviews',
+  select: 'name review rating',
 });
 
 // @desc    Add a restaurant
 // @route   POST /api/v1/restaurants
 // @access  Private
-exports.createRestaurant = asyncHandler(async (req, res, next) => {
-  const restaurant = await Restaurant.create(req.body);
-  res.status(201).json({
-    status: 'success',
-    data: { restaurant },
-  });
-});
+exports.createRestaurant = createOne(Restaurant);
 
 // @desc    Update a restaurant
 // @route   PATCH /api/v1/restaurants:id
 // @access  Private
-exports.updateRestaurant = asyncHandler(async (req, res, next) => {
-  const restaurant = await Restaurant.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-
-  // Check if restaurant exists
-  if (!restaurant) {
-    return next(
-      new CustomError(`No such restaurant with id ${req.params.id}`, 404)
-    );
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: { restaurant },
-  });
-});
+exports.updateRestaurant = updateOne(Restaurant);
 
 // @desc    Delete a restaurant
 // @route   DELETE /api/v1/restaurants:id
 // @access  Private
-exports.deleteRestaurant = asyncHandler(async (req, res, next) => {
-  const restaurant = await Restaurant.findById(req.params.id);
-
-  // Check if restaurant exists
-  if (!restaurant) {
-    return next(
-      new CustomError(`No such restaurant with id ${req.params.id}`, 404)
-    );
-  }
-
-  await restaurant.remove();
-
-  res.status(204).json({ status: 'success', data: null });
-});
+exports.deleteRestaurant = deleteOne(Restaurant);
 
 // @desc    Get top five rated cheap resturants
 // @route   GET /api/v1/restaurants/top-five-cheap

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Restaurant = require('./Restaurant');
 
 const ReviewSchema = new mongoose.Schema({
   review: {
@@ -71,8 +70,8 @@ ReviewSchema.statics.calcAverageRating = async function (restaurantId) {
   console.log(result);
 
   if (!result.length) {
-    // No reviews left
-    return await Restaurant.findByIdAndUpdate(
+    // No reviews
+    await this.model('Restaurant').findByIdAndUpdate(
       restaurantId,
       {
         averageRating: 4.5,
@@ -80,16 +79,18 @@ ReviewSchema.statics.calcAverageRating = async function (restaurantId) {
       },
       { runValidators: true }
     );
+  } else {
+    console.log(restaurantId);
+    const { averageRating, ratingsQty } = result[0];
+    await this.model('Restaurant').findByIdAndUpdate(
+      restaurantId,
+      {
+        averageRating,
+        ratingsQty,
+      },
+      { runValidators: true }
+    );
   }
-  const { averageRating, ratingsQty } = result[0];
-  await Restaurant.findByIdAndUpdate(
-    restaurantId,
-    {
-      averageRating,
-      ratingsQty,
-    },
-    { runValidators: true }
-  );
 };
 
 module.exports = mongoose.model('Review', ReviewSchema);

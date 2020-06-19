@@ -1,7 +1,7 @@
 const {
   getAll,
   getOne,
-  addOne,
+  createOne,
   updateOne,
   deleteOne,
 } = require('./handlerFactory');
@@ -20,7 +20,7 @@ exports.getUser = getOne(User);
 // @desc    Add a users
 // @route   POST /api/v1/users
 // @access  Private
-exports.addUser = addOne(User);
+exports.addUser = createOne(User);
 
 // @desc    Update a users
 // @route   PATCH /api/v1/users/:id

@@ -3,6 +3,7 @@ const CustomError = require('../utils/customError');
 const Review = require('../models/Review');
 const Restaurant = require('../models/Restaurant');
 const QueryFeatures = require('../utils/queryFeatures');
+const { getOne } = require('../controllers/handlerFactory');
 
 // @desc    Get reviews
 // @route   GET /api/v1/reviews
@@ -28,6 +29,11 @@ exports.getReviews = asyncHandler(async (req, res, next) => {
     data: { reviews },
   });
 });
+
+// @desc    Get a review
+// @route   GET /api/v1/reviews/:id
+// @access  Public
+exports.getReview = getOne(Review);
 
 // @desc    Post a review
 // @route   POST /api/v1/restaurants/:restaurantId/reviews

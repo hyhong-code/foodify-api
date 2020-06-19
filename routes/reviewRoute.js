@@ -1,6 +1,7 @@
 const express = require('express');
 
 const {
+  getReview,
   getReviews,
   createReview,
   updateReview,
@@ -15,7 +16,10 @@ router
   .get(getReviews)
   .post(protect, authorize('admin', 'user'), createReview);
 
-router.use(protect, authorize('admin', 'user'));
-router.route('/:id').patch(updateReview).delete(deleteReview);
+router
+  .route('/:id')
+  .get(getReview)
+  .patch(protect, authorize('admin', 'user'), updateReview)
+  .delete(protect, authorize('admin', 'user'), deleteReview);
 
 module.exports = router;

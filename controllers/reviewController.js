@@ -57,22 +57,25 @@ exports.createReview = asyncHandler(async (req, res, next) => {
 // @route   PATCH /api/v1/reviews/:id
 // @access  Private
 exports.updateReview = asyncHandler(async (req, res, next) => {
-  const review = await Review.findByIdAndUpdate(req.params.id);
+  let review = await Review.findById(req.params.id);
 
   // Check if review exists
   if (!review) {
     return next(new CustomError(`Review id ${req.params.id} not found`, 404));
   }
 
+  console.log(req.user.id, review.user._id.toString());
+
   // Check if user own the review
-  if (req.user.id !== review.user.toString()) {
+  if (req.user.id !== review.user._id.toString()) {
     return next(new CustomError(`User not authorized`, 401));
   }
 
   // Update the review
-  review.rating = req.body.rating;
-  review.review = req.body.review;
-  await review.save({ validateBeforeSave: true });
+  review = await Review.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
 
   res.status(200).json({
     status: 'success',
@@ -92,11 +95,11 @@ exports.deleteReview = asyncHandler(async (req, res, next) => {
   }
 
   // Check if user own the review
-  if (req.user.id !== review.user.toString()) {
+  if (req.user.id !== review.user._id.toString()) {
     return next(new CustomError(`User not authorized`, 401));
   }
 
-  await review.remove();
+  await Review.findByIdAndDelete(req.params.id);
 
   res.status(204).json({
     status: 'success',

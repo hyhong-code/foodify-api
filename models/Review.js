@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Restaurant = require('./Restaurant');
 
 const ReviewSchema = new mongoose.Schema({
   review: {
@@ -31,7 +32,8 @@ const ReviewSchema = new mongoose.Schema({
 // Ensure one user can only post one review for each restaurant
 ReviewSchema.index({ restaurant: 1, user: 1 }, { unique: true });
 
-ReviewSchema.pre(/^find/, function () {
+// Populate user and restaurant
+ReviewSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'user',
     select: 'name email',
@@ -39,6 +41,55 @@ ReviewSchema.pre(/^find/, function () {
     path: 'restaurant',
     select: 'name mainAddress',
   });
+  next();
 });
+
+// Re-calculate Restaurant average ratings after saving review
+ReviewSchema.post('save', async function (doc, next) {
+  await this.constructor.calcAverageRating(this.restaurant);
+  next();
+});
+
+// Re-calculate Restaurant average ratings after review update and delete
+ReviewSchema.post(/^findOneAnd/, async function (doc, next) {
+  await doc.constructor.calcAverageRating(doc.restaurant);
+  next();
+});
+
+// Calculate average restaurant ratings using aggregation on model
+ReviewSchema.statics.calcAverageRating = async function (restaurantId) {
+  const result = await this.aggregate([
+    { $match: { restaurant: restaurantId } },
+    {
+      $group: {
+        _id: '$restaurant',
+        averageRating: { $avg: '$rating' },
+        ratingsQty: { $sum: 1 },
+      },
+    },
+  ]);
+  console.log(result);
+
+  if (!result.length) {
+    // No reviews left
+    return await Restaurant.findByIdAndUpdate(
+      restaurantId,
+      {
+        averageRating: 4.5,
+        ratingsQty: 0,
+      },
+      { runValidators: true }
+    );
+  }
+  const { averageRating, ratingsQty } = result[0];
+  await Restaurant.findByIdAndUpdate(
+    restaurantId,
+    {
+      averageRating,
+      ratingsQty,
+    },
+    { runValidators: true }
+  );
+};
 
 module.exports = mongoose.model('Review', ReviewSchema);

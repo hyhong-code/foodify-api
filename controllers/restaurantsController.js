@@ -7,15 +7,13 @@ const asyncHandler = require('../utils/asyncHandler');
 // @route   GET /api/v1/restaurants
 // @access  Public
 exports.getRestaurants = asyncHandler(async (req, res, next) => {
-  const query = Restaurant.find().populate({
-    path: 'reviews',
-    select: 'name review',
-  });
+  const query = Restaurant.find();
   const restaurants = await new QueryFeatures(query, req.query)
     .filter()
     .select()
     .sort()
-    .paginate().query;
+    .paginate()
+    .query.populate({ path: 'reviews', select: 'name review rating' });
 
   res.status(200).json({
     status: 'success',
@@ -28,7 +26,10 @@ exports.getRestaurants = asyncHandler(async (req, res, next) => {
 // @route   GET /api/v1/restaurants:id
 // @access  Public
 exports.getRestaurant = asyncHandler(async (req, res, next) => {
-  const restaurant = await Restaurant.findById(req.params.id);
+  const restaurant = await Restaurant.findById(req.params.id).populate({
+    path: 'reviews',
+    select: 'name review rating',
+  });
 
   // Check if restaurant exists
   if (!restaurant) {

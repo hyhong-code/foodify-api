@@ -26,7 +26,8 @@ const RestaurantSchema = new mongoose.Schema(
       type: Number,
       min: [1, 'A rating must be at least 1.'],
       max: [5, 'A rating must be no more than 5'],
-      default: 4,
+      default: 4.5,
+      set: (v) => Math.round(v * 10) / 10,
     },
     ratingsQty: {
       type: Number,
@@ -123,6 +124,9 @@ const RestaurantSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+// Index high rating cheap restaurants for popular query
+RestaurantSchema.index({ averageDishPrice: 1, averageRating: -1 });
 
 // Enable virtual populating reviews
 RestaurantSchema.virtual('reviews', {

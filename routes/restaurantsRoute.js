@@ -12,7 +12,11 @@ const {
 
 const { protect, authorize } = require('../controllers/authController');
 
+const reviewRouter = require('./reviewRoute');
+
 const router = express.Router();
+
+router.use('/:restaurantId/reviews', reviewRouter);
 
 router.route('/top-five-cheap').get(topFiveCheapAlias, getRestaurants);
 router.route('/stats').get(protect, authorize('admin'), restaurantsStats);

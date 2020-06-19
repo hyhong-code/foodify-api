@@ -1,6 +1,12 @@
 const express = require('express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
+
 const errorHander = require('./controllers/errorsController');
 const CustomError = require('./utils/customError');
 
@@ -10,10 +16,28 @@ const authRouter = require('./routes/authRoute');
 const app = express();
 
 // Middlewares
+app.use(helmet()); // Set secure http headers
 if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
+  app.use(morgan('dev')); // Dev logger
 }
-app.use(express.json());
+// Rate limiter
+app.use(
+  '/api',
+  rateLimit({
+    max: 100,
+    windowMs: 60 * 60 * 1000,
+    message: 'To many requests, try again later.',
+  })
+);
+app.use(express.json({ limit: '10kb' }));
+app.use(mongoSanitize()); // Prevent NoSQL injection
+app.use(xss()); // Prevent XSS attack
+// Prevent http params polution
+app.use(
+  hpp({
+    whitelist: ['name', 'maxTableSize', 'affordability'],
+  })
+);
 app.use(cookieParser());
 
 // Routers

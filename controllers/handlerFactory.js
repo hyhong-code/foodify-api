@@ -4,7 +4,13 @@ const QueryFeatures = require('../utils/queryFeatures');
 
 exports.getAll = (Model, populateObj) =>
   asyncHandler(async (req, res, next) => {
-    let query = Model.find();
+    // For getReviews route handler
+    const filter = {};
+    if (req.params.restaurantId) {
+      filter.restaurant = req.params.restaurantId;
+    }
+
+    let query = Model.find(filter);
 
     // eslint-disable-next-line
     query = new QueryFeatures(query, req.query)

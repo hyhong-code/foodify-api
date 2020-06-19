@@ -50,7 +50,7 @@ exports.createReview = asyncHandler(async (req, res, next) => {
 // @route   PATCH /api/v1/reviews/:id
 // @access  Private
 exports.updateReview = asyncHandler(async (req, res, next) => {
-  const review = await Review.findById(req.params.id);
+  const review = await Review.findByIdAndUpdate(req.params.id);
 
   // Check if review exists
   if (!review) {
@@ -70,5 +70,29 @@ exports.updateReview = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: { review },
+  });
+});
+
+// @desc    Delate a review
+// @route   DELETE /api/v1/reviews/:id
+// @access  Private
+exports.deleteReview = asyncHandler(async (req, res, next) => {
+  const review = await Review.findById(req.params.id);
+
+  // Check if review exists
+  if (!review) {
+    return next(new CustomError(`Review id ${req.params.id} not found`, 404));
+  }
+
+  // Check if user own the review
+  if (req.user.id !== review.user.toString()) {
+    return next(new CustomError(`User not authorized`, 401));
+  }
+
+  await review.remove();
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
   });
 });

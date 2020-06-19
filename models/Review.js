@@ -28,4 +28,7 @@ const ReviewSchema = new mongoose.Schema({
   },
 });
 
+// Ensure one user can only post one review for each restaurant
+ReviewSchema.index({ restaurant: 1, user: 1 }, { unique: true });
+
 module.exports = mongoose.model('Review', ReviewSchema);

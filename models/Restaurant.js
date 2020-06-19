@@ -129,6 +129,9 @@ const RestaurantSchema = new mongoose.Schema(
 // Index high rating cheap restaurants for popular query
 RestaurantSchema.index({ averageDishPrice: 1, averageRating: -1 });
 
+// For geospacial aggregation
+RestaurantSchema.index({ mainLocation: '2dsphere' });
+
 // Enable virtual populating reviews
 RestaurantSchema.virtual('reviews', {
   ref: 'Review',
@@ -193,10 +196,10 @@ RestaurantSchema.post(/^find/, function (doc, next) {
 });
 
 // Aggregation middlewares - this refers to aggregation object
-RestaurantSchema.pre('aggregate', function (next) {
-  // Exclude banned restaurants from aggregation
-  this.pipeline().unshift({ $match: { banned: { $ne: true } } });
-  next();
-});
+// RestaurantSchema.pre('aggregate', function (next) {
+//   // Exclude banned restaurants from aggregation
+//   this.pipeline().unshift({ $match: { banned: { $ne: true } } });
+//   next();
+// });
 
 module.exports = mongoose.model('Restaurant', RestaurantSchema);

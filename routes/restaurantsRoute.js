@@ -9,6 +9,7 @@ const {
   topFiveCheapAlias,
   restaurantsStats,
   restaurantsWithin,
+  getDistances,
 } = require('../controllers/restaurantsController');
 
 const { protect, authorize } = require('../controllers/authController');
@@ -25,6 +26,8 @@ router.route('/stats').get(protect, authorize('admin'), restaurantsStats);
 router
   .route('/restaurants-within/:distance/center/:latlng/unit/:unit')
   .get(restaurantsWithin);
+
+router.route('/distances/:latlng/unit/:unit').get(getDistances);
 
 router
   .route('/')

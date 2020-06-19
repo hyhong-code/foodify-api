@@ -138,7 +138,7 @@ exports.restaurantsStats = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Get Restaurants within distance
-// @reoute  GET /api/v1/restaurants-within/:distance/center/:latlng/unit/:unit
+// @reoute  GET /api/v1/restaurants/restaurants-within/:distance/center/:latlng/unit/:unit
 // @access  Public
 exports.restaurantsWithin = asyncHandler(async (req, res, next) => {
   const { distance, latlng, unit } = req.params;
@@ -167,5 +167,43 @@ exports.restaurantsWithin = asyncHandler(async (req, res, next) => {
     status: 'success',
     results: restaurants.length,
     data: { restaurants },
+  });
+});
+
+// @desc    Calculate distance from a point to restaurants
+// @reoute  GET /api/v1/restaurants/distances/:latlng/unit/:unit
+// @access  Public
+exports.getDistances = asyncHandler(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  // Check if req params format correct
+  if (!(lat && lng)) {
+    return next(
+      new CustomError(
+        `Please provide latitute and longitude in the form of lat,lng`,
+        400
+      )
+    );
+  }
+
+  // Calculate distances
+  const distanceMultiplier = unit === 'mi' ? 0.001 : 0.000621371;
+
+  const distances = await Restaurant.aggregate([
+    {
+      $geoNear: {
+        near: { type: 'Point', coordinates: [lng * 1, lat * 1] },
+        distanceField: 'distance',
+        distanceMultiplier,
+      },
+    },
+    { $project: { name: 1, distance: 1, mainAddress: 1 } },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    results: distances.length,
+    data: { distances },
   });
 });

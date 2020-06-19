@@ -136,3 +136,36 @@ exports.restaurantsStats = asyncHandler(async (req, res, next) => {
     data: { stats },
   });
 });
+
+// @desc    Get Restaurants within distance
+// @reoute  GET /api/v1/restaurants-within/:distance/center/:latlng/unit/:unit
+// @access  Public
+exports.restaurantsWithin = asyncHandler(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  // Check if req params format correct
+  if (!(lat && lng)) {
+    return next(
+      new CustomError(
+        `Please provide latitute and longitude in the form of lat,lng`,
+        400
+      )
+    );
+  }
+
+  // Calculate radius based on unit
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.15214;
+
+  const restaurants = await Restaurant.find({
+    mainLocation: {
+      $geoWithin: { $centerSphere: [[lng, lat], radius] },
+    },
+  });
+
+  res.status(200).json({
+    status: 'success',
+    results: restaurants.length,
+    data: { restaurants },
+  });
+});

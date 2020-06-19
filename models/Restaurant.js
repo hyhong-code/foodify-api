@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const geocoder = require('../utils/geoCode');
+const Review = require('../models/Review');
 
 const RestaurantSchema = new mongoose.Schema(
   {
@@ -139,6 +140,12 @@ RestaurantSchema.virtual('reviews', {
 // Generate a slug
 RestaurantSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// Cascade delete reviews
+RestaurantSchema.pre('remove', async function (next) {
+  await Review.deleteMany({ restaurant: this._id });
   next();
 });
 

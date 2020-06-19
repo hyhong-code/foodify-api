@@ -53,6 +53,12 @@ UserSchema.pre('save', async function (next) {
   next();
 });
 
+// Verify user password
+UserSchema.methods.verifyPassword = async function (plain) {
+  console.log(plain, this.password);
+  return await bcrypt.compare(plain, this.password);
+};
+
 // Sign and return a token
 UserSchema.methods.generateToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {

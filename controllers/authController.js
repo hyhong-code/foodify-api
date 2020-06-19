@@ -23,6 +23,15 @@ const sendTokenResponse = (user, statusCode, res) => {
   });
 };
 
+// Returns a new obejct with unwanted fields removed
+const filterReqBody = (reqBody, ...fieldsToExclude) => {
+  const filteredBody = { ...reqBody };
+  Object.keys(filteredBody).forEach((key) => {
+    if (!fieldsToExclude.includes(key)) delete filteredBody[key];
+  });
+  return filteredBody;
+};
+
 // @desc    Sign up a user
 // @route   POST /api/v1/auth/signup
 // @access  Public
@@ -57,27 +66,41 @@ exports.loadMe = asyncHandler(async (req, res, next) => {
   });
 });
 
-const filterBody = (body, ...fields) => {
-  const filteredBody = { ...body };
-  Object.keys(filteredBody).forEach((key) => {
-    if (!fields.includes(key)) delete filteredBody[key];
-  });
-  return filteredBody;
-};
-
 // @desc    Update user name or email
 // @route   PATCH /api/v1/auth/updateinfo
 // @access  Private
 exports.updateInfo = asyncHandler(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     req.user.id,
-    filterBody(req.body, 'name', 'email'),
+    filterReqBody(req.body, 'name', 'email'),
     { new: true, runValidators: true }
   );
   res.status(200).json({
     status: 'success',
     data: { user },
   });
+});
+
+// @desc    Update user password
+// @route   PATCH /api/v1/auth/updatepassword
+// @access  Private
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const { password, passwordConfirm } = req.body;
+
+  // Check if required fields exists
+  if (!(password && passwordConfirm)) {
+    return next(
+      new CustomError(`password and passwordConfirm are required`, 400)
+    );
+  }
+
+  // Update password
+  const user = await User.findById(req.user.id);
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
+  await user.save({ validateBeforeSave: true });
+
+  sendTokenResponse(user, 200, res);
 });
 
 // Authenticate via valid Bearer token or cookie token

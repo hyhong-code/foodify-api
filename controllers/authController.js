@@ -57,9 +57,28 @@ exports.loadMe = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Load logged in user info
-// @route   /api/v1/auth/loadme
+const filterBody = (body, ...fields) => {
+  const filteredBody = { ...body };
+  Object.keys(filteredBody).forEach((key) => {
+    if (!fields.includes(key)) delete filteredBody[key];
+  });
+  return filteredBody;
+};
+
+// @desc    Update user name or email
+// @route   PATCH /api/v1/auth/updateinfo
 // @access  Private
+exports.updateInfo = asyncHandler(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    filterBody(req.body, 'name', 'email'),
+    { new: true, runValidators: true }
+  );
+  res.status(200).json({
+    status: 'success',
+    data: { user },
+  });
+});
 
 // Authenticate via valid Bearer token or cookie token
 exports.protect = asyncHandler(async (req, res, next) => {

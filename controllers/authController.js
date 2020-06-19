@@ -1,9 +1,9 @@
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const CustomError = require('../utils/customError');
 const asyncHandler = require('../utils/asyncHandler');
 const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');
-const { use } = require('../routes/authRoute');
 
 // Signs a jwt and responds with cookie
 const sendTokenResponse = (user, statusCode, res) => {
@@ -158,6 +158,42 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: { message: 'Reset token send via email.' },
+  });
+});
+
+// @desc    Reset password
+// @route   PATCH /api/v1/auth/resetpassword:resetToken
+// @access  Public
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  // Rehash token
+  const pwResetToken = crypto
+    .createHash('sha256')
+    .update(req.params.resetToken)
+    .digest('hex');
+
+  const user = await User.findOne({ pwResetToken });
+
+  // Check if user exists
+  if (!user) {
+    return next(new CustomError(`Invalid reset token`, 400));
+  }
+
+  // Check if token expired
+  if (user.pwResetTokenExpires < Date.now()) {
+    return next(new CustomError(`Reset token expired`, 400));
+  }
+
+  // Reset password
+  const { password, passwordConfirm } = req.body;
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
+  user.pwResetToken = undefined;
+  user.pwResetTokenExpires = undefined;
+  await user.save({ validateBeforeSave: true });
+
+  res.status(200).json({
+    status: 'success',
+    data: { message: 'Password successfully reset' },
   });
 });
 

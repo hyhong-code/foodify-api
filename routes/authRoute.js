@@ -8,14 +8,15 @@ const {
   updateInfo,
   updatePassword,
   forgotPassword,
+  resetPassword,
 } = require('../controllers/authController');
 
 const router = express.Router();
 
 router.route('/signup').post(signUp);
 router.route('/login').post(login);
-
 router.route('/forgotpassword').post(forgotPassword);
+router.route('/resetpassword/:resetToken').patch(resetPassword);
 
 router.route('/loadme').get(protect, loadMe);
 router.route('/updateinfo').patch(protect, updateInfo);

@@ -9,6 +9,7 @@ const {
   updatePassword,
   forgotPassword,
   resetPassword,
+  deleteMe,
 } = require('../controllers/authController');
 
 const router = express.Router();
@@ -21,5 +22,6 @@ router.route('/resetpassword/:resetToken').patch(resetPassword);
 router.route('/loadme').get(protect, loadMe);
 router.route('/updateinfo').patch(protect, updateInfo);
 router.route('/updatepassword').patch(protect, updatePassword);
+router.route('/deleteme').delete(protect, deleteMe);
 
 module.exports = router;

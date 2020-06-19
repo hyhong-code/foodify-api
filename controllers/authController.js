@@ -114,6 +114,18 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res);
 });
 
+// @desc    Marks a user in active
+// @route   DELETE /api/v1/auth/deleteme
+// @access  Private
+exports.deleteMe = asyncHandler(async (req, res, next) => {
+  req.user.active = false;
+  await req.user.save({ validateBeforeSave: false });
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
+
 // @desc    Request password reset token
 // @route   POST /api/v1/auth/forgotpassword
 // @access  Public
@@ -215,15 +227,21 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
   // Handle no token
   if (!token) {
-    next(new CustomError(`No token, access denied`, 401));
+    return next(new CustomError(`No token, access denied`, 401));
   }
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const user = await User.findById(decoded.id);
 
+  if (!user) {
+    return next(new CustomError(`User does not exist`, 404));
+  }
+
   // Handle password changed after token was issued
   if (user.checkPwChangedDate(decoded.iat)) {
-    next(new CustomError(`Password recently changed, please login again`, 401));
+    return next(
+      new CustomError(`Password recently changed, please login again`, 401)
+    );
   }
 
   req.user = user;
